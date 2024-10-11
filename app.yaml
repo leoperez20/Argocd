@@ -1,3 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: python-html
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Hola Mundo</title>
+    </head>
+    <body>
+        <h1>Hola Mundo</h1>
+    </body>
+    </html
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,9 +35,16 @@ spec:
       containers:
       - name: python
         image: python:3.9
-        command: ["python", "-m", "http.server", "5000"]
+        command: ["python", "-m", "http.server", "5000", "--directory", "/app"]
         ports:
         - containerPort: 5000
+        volumeMounts:
+        - name: html-volume
+          mountPath: /app
+      volumes:
+      - name: html-volume
+        configMap:
+          name: python-html
 ---
 apiVersion: v1
 kind: Service
